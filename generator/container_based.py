@@ -8,7 +8,7 @@ ENUM_CONTAINER = 8
 ENUM_ALL = 15
 
 CONTAINERS = {  # container: types of expressions
-    "(({})e^({}))": [ENUM_ALL, 1 + 2 + 4],
+    "(({})e^({}))": [ENUM_ALL, 1 + 2],
     "(({})/({}))": [ENUM_ALL, ENUM_ALL - 1],
     "(({})tan({}))": [ENUM_ALL, ENUM_LINEAR],
     "(({})sin({}))": [ENUM_ALL, ENUM_LINEAR],
@@ -18,7 +18,7 @@ CONTAINERS = {  # container: types of expressions
     "{}+{}K": [15 - 1, 15 - 1],
     "{}-{}": [1, 15 - 1],
     "{}-{}K": [15 - 1, 15 - 1],
-    "{}({})": [ENUM_NON_LINEAR + ENUM_LINEAR, ENUM_ALL]
+    "{}({})": [ENUM_NON_LINEAR + ENUM_LINEAR, ENUM_CONTAINER]
 }
 # K = dummy to separate keys, replace to '' later
 
