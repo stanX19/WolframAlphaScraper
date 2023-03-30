@@ -8,7 +8,7 @@ from selenium.webdriver.edge.options import Options
 from selenium.common.exceptions import TimeoutException
 
 
-def scrape_solution_image(expression: str, headless=True, wait_for=20, seek_error=True):
+def scrape_solution_image(expression: str, headless=True, wait_for=20, definite=True):
     # Set up options for headless browser
     options = Options()
     options.headless = headless
@@ -32,40 +32,50 @@ def scrape_solution_image(expression: str, headless=True, wait_for=20, seek_erro
 
     # Look for the error message first
     try:
+        # error text
+        ERROR_TEXT = {
+            "Wolfram|Alpha doesn't understand your query": ValueError,
+            "Standard computation time exceeded...": TimeoutError,
+        }
+
+        # XPATH of various target
+        ERROR_XPATH = " | ".join("//section//*[text()=\"{}\"]".format(t) for t in ERROR_TEXT)
+        INDEF_XPATH = "//section[contains(header/h2/span/text(),\
+                        'Indefinite integral')]/descendant::*//img[contains(@class,'_Xijx')]"
+        DEFIN_XPATH = "//section[contains(header/h2/span/text(),\
+                        'Definite integral')]/descendant::*//img[contains(@class,'_Xijx')]"
+
+        if definite:
+            XPATH = f"{ERROR_XPATH} | {DEFIN_XPATH}"
+        else:
+            XPATH = f"{ERROR_XPATH} | {INDEF_XPATH} | {DEFIN_XPATH}"
         # Look for either the error or solution element
         wait = WebDriverWait(browser, wait_for)
-        if seek_error:
-            XPATH = "//*[contains(@class,'_tc9a') or contains(@class,'_Xijx')]"
-        else:
-            XPATH = "contains(@class,'_Xijx')]"
         element = wait.until(EC.presence_of_element_located((By.XPATH, XPATH)))
 
-        if element.get_attribute("class") == "_tc9a":
-            error_text = element.find_element(By.TAG_NAME, "span").text
-            raise ValueError(error_text)
-        else:
-            solution = element
+        if hasattr(element, "text") and element.text in ERROR_TEXT:
+            raise ERROR_TEXT[element.text](element.text)
 
     except TimeoutException:
         raise TimeoutError(f"Wolfram Alpha took too long to respond (>{wait_for}s)")
 
-    image_src = solution.get_attribute('src')
+    # at this point must have image, based on previous xpath
+    image_src = element.get_attribute('src')
     logging.info(f"Image source found: {image_src[:60]}...")
-
     browser.quit()
 
     # Extract img data from src
     try:
         return image_src.split(',')[1]
     except IndexError:
-        raise ValueError("Incorrect url format, abort")
+        raise ValueError("Incorrect img src format, abort")
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)  # DEBUG INFO WARNING ERROR CRITICAL
 
-    expression = 'D[(x^2)e^x,x]'
+    _expression = 'Integrate[(x^x)e^x, x]'
     try:
-        img_data = scrape_solution_image(expression, headless=False, wait_for=60)
+        img_data = scrape_solution_image(_expression, headless=False, wait_for=60)
     except (TimeoutError, ValueError) as exc:
         logging.error(exc)
