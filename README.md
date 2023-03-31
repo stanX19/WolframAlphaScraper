@@ -32,7 +32,7 @@ you will then see:
 
 `Loop count:` The number of integrals that is going to be generated
 
-`Base dir: ` The location to store all the soltion image generated in this loop. If it's not absolute, it will be saved in `WolframAlphaScraper/saved`
+`Base dir: ` The file path to store all the soltion image generated in this loop. If it's not absolute, it will be saved in `WolframAlphaScraper/saved`
 
 `max container: ` The maximum number of containers allowed in an equation
 
