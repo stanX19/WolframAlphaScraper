@@ -16,7 +16,7 @@ def run(directory: str, max_container: int, max_depth: int):
         return
 
     date_time = time.strftime('%Y-%m-%d %H_%M_%S', time.localtime(time.time()))
-    path = f"{directory}\\{date_time}.png"
+    path = f"saved\\{directory}\\{date_time}.png"
     try:
         write_img(path, img_data)
     except OSError as exc:
@@ -27,7 +27,7 @@ def main():
     logging.basicConfig(level=logging.INFO)  # DEBUG INFO WARNING ERROR CRITICAL
 
     N = int(input("Loop count: "))
-    directory = input("Base dir: ")
+    directory = os.path.join("saved", input("Base dir: "))
     max_container = int(input("Max container: "))
     max_depth = int(input("Max depth: "))
 
