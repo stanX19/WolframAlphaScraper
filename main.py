@@ -1,6 +1,8 @@
 import os
 import time
 import logging
+import platform
+import subprocess
 from generator import generate_expression, definite_integral, generate_low_high
 from scraper import scrape_solution_image
 from write_img import write_img
@@ -23,6 +25,20 @@ def run(directory: str, max_container: int, max_depth: int):
     except OSError as exc:
         logging.error(exc)
     return path
+
+
+def open_files(paths, directory):
+    if len(paths) <= 5:
+        for path in paths:
+            if platform.system() == 'Windows':
+                os.startfile(path)
+            elif platform.system() == 'Linux':
+                subprocess.Popen(['xdg-open', path])
+    else:
+        if platform.system() == 'Windows':
+            os.startfile(directory)
+        elif platform.system() == 'Linux':
+            subprocess.Popen(['xdg-open', directory])
 
 
 def main():
@@ -52,7 +68,6 @@ def main():
             path = run(directory, max_container, max_depth)
             if path:
                 paths.append(path)
-            logging.info("")
     except Exception as exc:
         show_notification(exc, f"ERROR")
         raise exc
@@ -61,8 +76,7 @@ def main():
     notify_when_done(N, len(paths), round(time.perf_counter() - start_time, 2))
 
     # Open successful paths
-    for path in paths:
-        os.startfile(path)
+    open_files(paths, directory)
 
 
 if __name__ == '__main__':
