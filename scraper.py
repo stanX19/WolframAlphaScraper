@@ -8,14 +8,28 @@ from selenium.webdriver.edge.options import Options
 from selenium.common.exceptions import TimeoutException
 
 
+browser = None
+
+
+def quit_browser():
+    global browser
+    if isinstance(browser, webdriver.Edge):
+        browser.quit()
+        logging.info("browser terminated")
+        browser = None
+
+
 def scrape_solution_image(expression: str, headless=True, wait_for=20, definite=True):
+    global browser
+
     # Set up options for headless browser
     options = Options()
     options.headless = headless
 
     # Create an instance of the WebDriver object
-    browser = webdriver.Edge(options=options)
-    logging.info("browser started")
+    if browser is None:
+        browser = webdriver.Edge(options=options)
+        logging.info("browser started")
 
     # Encode the query string
     encoded_query = requests.utils.quote(expression)
@@ -62,7 +76,6 @@ def scrape_solution_image(expression: str, headless=True, wait_for=20, definite=
     # at this point must have image, based on previous xpath
     image_src = element.get_attribute('src')
     logging.info(f"Image source found: {image_src[:60]}...")
-    browser.quit()
 
     # Extract img data from src
     try:

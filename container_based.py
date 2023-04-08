@@ -10,16 +10,16 @@ ENUM_CONTAINERS = 24
 ENUM_ALL = 31
 
 ARITHMETIC = {  # container: types of expressions
-    "{}+{}": [1, ENUM_ALL - 1 - ENUM_ARITHMETIC],
-    "{}+{}K": [ENUM_ALL - 1, ENUM_ALL - 1],
-    "{}-{}": [1, ENUM_ALL - 1 - ENUM_ARITHMETIC],
-    "{}-{}K": [ENUM_ALL - 1, ENUM_ALL - 1],
+    "{}+{}": [ENUM_INTEGER, ENUM_ALL - ENUM_INTEGER - ENUM_ARITHMETIC],
+    "{}+{}K": [ENUM_ALL - ENUM_INTEGER, ENUM_ALL - ENUM_INTEGER],
+    "{}-{}": [ENUM_INTEGER, ENUM_ALL - ENUM_INTEGER - ENUM_ARITHMETIC],
+    "{}-{}K": [ENUM_ALL - ENUM_INTEGER, ENUM_ALL - ENUM_INTEGER],
 }
 
 FUNCTIONS = {  # container: types of expressions
-    "(({})e^({}))": [ENUM_ALL, 1 + 2],
-    "(({})/({}))": [ENUM_ALL, ENUM_ALL - 1],
-    "(1/({}))": [ENUM_ALL - 1],
+    "(({})e^({}))": [ENUM_ALL, ENUM_LINEAR],
+    "(({})/({}))": [ENUM_ALL, ENUM_ALL - ENUM_INTEGER],
+    "(1/({}))": [ENUM_ALL - ENUM_INTEGER],
 
     "(({})tan({}))": [ENUM_ALL, ENUM_LINEAR],
     "(({})sin({}))": [ENUM_ALL, ENUM_LINEAR],
@@ -31,7 +31,7 @@ FUNCTIONS = {  # container: types of expressions
 
     "(e^({}))": [ENUM_LINEAR + ENUM_NON_LINEAR],
     "(ln({}))": [ENUM_LINEAR + ENUM_NON_LINEAR],
-    "(sqrt({}))": [ENUM_ALL - 1],
+    "(sqrt({}))": [ENUM_ALL - ENUM_INTEGER],
 
     "{}({})": [ENUM_NON_LINEAR + ENUM_LINEAR, ENUM_CONTAINERS]
 }
@@ -83,7 +83,7 @@ def _container_based(_constrain=ENUM_ALL, _depth=0):
 
         expressions_dict = EXP_DICT[choice]
         expression, argc = random.choice(list(expressions_dict.items()))
-        return expression.format(*[random.randint(2, 9) for arg in range(argc)])
+        return expression.format(*[random.randint(2, 3) for arg in range(argc)])
 
 
 def generate_expression(max_container=3, max_depth=2):

@@ -3,8 +3,9 @@ import time
 import logging
 import platform
 import subprocess
-from generator import generate_expression, definite_integral, generate_low_high
-from scraper import scrape_solution_image
+from container_based import generate_expression
+from convert_to_integral import definite_integral, generate_low_high
+import scraper
 from write_img import write_img
 from notify import notify_when_done, show_notification
 
@@ -13,7 +14,7 @@ def run(directory: str, max_container: int, max_depth: int):
     expression = generate_expression(max_container, max_depth)  # input("expression: ")  # 'D[(x^2)e^x,x]'
     try:
         query = definite_integral(expression, *generate_low_high(expression))
-        img_data = scrape_solution_image(query, headless=True)
+        img_data = scraper.scrape_solution_image(query, headless=True)
     except (TimeoutError, ValueError) as exc:
         logging.error(exc)
         return
@@ -27,8 +28,8 @@ def run(directory: str, max_container: int, max_depth: int):
     return path
 
 
-def open_files(paths, directory):
-    if len(paths) <= 5:
+def open_files(paths, success, directory):
+    if success <= 5:
         for path in paths:
             if platform.system() == 'Windows':
                 os.startfile(path)
@@ -63,20 +64,29 @@ def main():
 
     # Run the function N times and save successful paths
     paths = []
+    success = 0
     try:
         for i in range(N):
             path = run(directory, max_container, max_depth)
             if path:
-                paths.append(path)
+                if len(paths) < 5:
+                    paths.append(path)
+                success += 1
+                logging.info(f"Status: SUCCESS | Loop no: {i + 1} | Total Success: {success}\n")
+            else:
+                logging.info(f"Status: TERMINATED | Loop no: {i + 1} | Total Success: {success}\n")
     except Exception as exc:
         show_notification(exc, f"ERROR")
         raise exc
 
+    # terminate
+    scraper.quit_browser()
+
     # Notify user of completion and execution time
-    notify_when_done(N, len(paths), round(time.perf_counter() - start_time, 2))
+    notify_when_done(N, success, round(time.perf_counter() - start_time, 2))
 
     # Open successful paths
-    open_files(paths, directory)
+    open_files(paths, success, directory)
 
 
 if __name__ == '__main__':
