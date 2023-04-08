@@ -37,3 +37,17 @@ you will then see:
 `max container: ` The maximum number of containers allowed in an equation
 
 `max depth: ` The maximum depth of container a container can contain
+
+Configuration Example
+
+![example_initial_config.png](assets/initial_config.png)
+
+After providing the initial parameters, the program will start to run.
+
+It will show logging at info level to indicate the progress:
+
+![example_logging_in_process.png](assets/logging_in_process.png)
+
+When the process is complete, you will be notified via system notification:
+
+![example_notification.png](assets/example_notification.png)
