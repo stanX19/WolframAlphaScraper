@@ -11,7 +11,7 @@ def show_notification(message="", title="Notification"):
 
 def notify_when_done(total_loop, total_scrape, total_seconds):
     message = f"""Total loop: {total_loop}
-Successful: {total_scrape} -{round(total_scrape/total_loop*100, 1)}%-
+Successful: {total_scrape}    -{round(total_scrape/total_loop*100, 1)}%-
 Time used: {total_seconds}s"""
     show_notification(title="Scraping completed", message=message)
 
