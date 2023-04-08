@@ -18,7 +18,7 @@ wsl, git bash or equivalent:
 git clone git@github.com:stanX19/WolframAlphaScraper.git WolframAlphaScraper
 ```
 
-Command prompt:
+Then, on command prompt:
 
 ```commandline
 cd WolframAlphaScraper
