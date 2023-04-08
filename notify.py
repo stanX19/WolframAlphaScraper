@@ -21,4 +21,7 @@ Time used: {total_seconds}s"""
 
 
 if __name__ == '__main__':
-    show_notification("hello world!")
+    message = f"""Total loop: 10
+Successful: 8    -80.0%-
+Time used: 90.56s"""
+    show_notification(message)
